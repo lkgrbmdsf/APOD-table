@@ -61,8 +61,8 @@ async function getResults(startDate, endDate) {
   table.innerHTML = spinner;
   try {
     pagination.classList.add("hidden");
-    // const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
-    const url = "./temp.json";
+    const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
+    // const url = "./temp.json";
     const result = await fetch(url);
     const listOfImgs = await result.json();
     return loadPaging(listOfImgs.length, (pagingOptions) => {
