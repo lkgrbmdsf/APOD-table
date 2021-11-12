@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <header class="header">
+      <form>
+        <input type="date" name="date-start" class="date-start" />
+        <input type="date" name="date-end" class="date-end" />
+
+        <select name="apods-per-page">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+        </select>
+      </form>
+    </header>
+
+    <div class="main">
+      <div class="modal-wrapper"><div class="modal"></div></div>
+      <div class="table"></div>
+
+      <div class="pagination">
+        <button class="btn prev-btn"><</button>
+
+        <ul class="pages">
+        </ul>
+        <button class="btn next-btn">></button>
+      </di>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
