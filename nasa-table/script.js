@@ -53,8 +53,8 @@ async function getResults(startDate, endDate) {
   table.innerHTML = spinner;
   try {
     pagination.classList.add("hidden");
-    const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
-    // const url = "./temp.json";
+    // const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
+    const url = "./temp.json";
     const result = await fetch(url);
     const listOfImgs = await result.json();
     return loadPaging(listOfImgs.length, (pagingOptions) => {
@@ -132,7 +132,7 @@ function loadPaging(totalItems, callback) {
     const listOfLi = pages.querySelectorAll("li");
 
     listOfLi.forEach((item) => {
-      if (+item.innerText === 3 && +item.innerText !== totalPageCount) {
+      if (+item.innerText === 3 && +item.innerText < totalPageCount) {
         item.innerText =
           currentPageNumber > 3 && currentPageNumber < totalPageCount
             ? currentPageNumber
@@ -148,6 +148,10 @@ function loadPaging(totalItems, callback) {
       }
 
       item.innerText === "..." ? (item.style.pointerEvents = "none") : item;
+
+      if (pages.lastChild.innerText === "...") {
+        pages.lastChild.innerText = totalPageCount;
+      }
 
       item.addEventListener("click", (e) => {
         currentPageNumber = +e.target.innerText;
