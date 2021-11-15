@@ -106,18 +106,16 @@ async function loadList(list) {
 
   table.innerHTML = html;
 
-  const rows = document.querySelectorAll(".row");
-  rows.forEach((row) => {
-    const img = row.querySelector("img");
-
-    row.addEventListener("click", () => {
+  const imgs = table.querySelectorAll("img");
+  imgs.forEach((img) =>
+    img.addEventListener("click", () => {
       modal.innerHTML =
         img.dataset.src === ""
           ? `<img src="${img.src}">`
           : `<iframe src="${img.dataset.src}">`;
       modalWrapper.classList.add("expanded");
-    });
-  });
+    })
+  );
 
   return table;
 }
