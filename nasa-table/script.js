@@ -45,10 +45,7 @@ dates.forEach((date) => {
 
 modalWrapper.addEventListener("click", () => {
   modal.innerHTML = "";
-  [header, table, pagination].forEach((element) => {
-    element.classList.remove("disabled");
     modalWrapper.classList.remove("expanded");
-  });
 });
 
 async function getResults(startDate, endDate) {
