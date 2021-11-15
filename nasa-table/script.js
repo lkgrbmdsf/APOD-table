@@ -17,8 +17,11 @@ const currPage = document.querySelector(".curr-pg");
 const totalPages = document.querySelector(".total-pg");
 
 const FIRST_APOD_DATE = "1995-06-16";
-startDate.value = "2021-09-01";
+const DATE_NOW = new Date().toISOString().split("T")[0];
+startDate.value = "2021-11-01";
 endDate.value = "2021-11-09";
+startDate.max = endDate.value;
+endDate.max = DATE_NOW;
 
 let currentPageNumber = 1;
 preButton.disabled = currentPageNumber === 1;
@@ -28,32 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 dates.forEach((date) => {
-  const dateNow = new Date().toISOString().split("T")[0];
   date.min = FIRST_APOD_DATE;
-  date.max = dateNow;
 
   date.addEventListener("change", () => {
+    if (endDate.value < startDate.value) {
+      startDate.value = endDate.value;
+    }
+    startDate.max = endDate.value;
+
     getResults(startDate.value, endDate.value);
   });
 });
 
-endDate.addEventListener("change", () => {
-  if (endDate.value < startDate.value) {
-    startDate.value = endDate.value;
-  }
-  startDate.max = endDate.value;
-});
-
-startDate.addEventListener("change", () => {
-  if (endDate.value < startDate.value) endDate.value = startDate.value;
-});
-
 modalWrapper.addEventListener("click", () => {
   modal.innerHTML = "";
-  [header, table, pagination].forEach((element) => {
-    element.classList.remove("disabled");
-    modalWrapper.classList.remove("expanded");
-  });
+  modalWrapper.classList.remove("expanded");
 });
 
 async function getResults(startDate, endDate) {
@@ -61,8 +53,8 @@ async function getResults(startDate, endDate) {
   table.innerHTML = spinner;
   try {
     pagination.classList.add("hidden");
-    const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
-    // const url = "./temp.json";
+    // const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
+    const url = "./temp.json";
     const result = await fetch(url);
     const listOfImgs = await result.json();
     return loadPaging(listOfImgs.length, (pagingOptions) => {
@@ -105,28 +97,22 @@ async function loadList(list) {
   }
 
   let html = "";
-  await list.forEach((item, index) => {
-    do {
-      html += createItem(item);
-      index++;
-      break;
-    } while (index <= list.length - 1);
+  await list.forEach((item) => {
+    html += createItem(item);
   });
 
   table.innerHTML = html;
 
-  const rows = document.querySelectorAll(".row");
-  rows.forEach((row) => {
-    const img = row.querySelector("img");
-
-    row.addEventListener("click", () => {
+  const imgs = table.querySelectorAll("img");
+  imgs.forEach((img) =>
+    img.addEventListener("click", () => {
       modal.innerHTML =
         img.dataset.src === ""
           ? `<img src="${img.src}">`
           : `<iframe src="${img.dataset.src}">`;
       modalWrapper.classList.add("expanded");
-    });
-  });
+    })
+  );
 
   return table;
 }
@@ -136,20 +122,38 @@ function loadPaging(totalItems, callback) {
     pages.innerHTML = "";
     const totalPageCount = Math.ceil(totalItems / +select.value);
 
-    const li = document.createElement("li");
+    let html = "";
 
     for (let i = 1; i <= totalPageCount; i++) {
-      li.innerText = `<li>${i}</li>`;
-      pages.innerHTML += li.innerText;
+      html += `<li>${i}</li>`;
     }
+    pages.innerHTML = html;
 
     const listOfLi = pages.querySelectorAll("li");
+
     listOfLi.forEach((item) => {
-      if (+item.innerText === currentPageNumber)
+      if (+item.innerText === 3 && +item.innerText < totalPageCount) {
+        item.innerText =
+          currentPageNumber > 3 && currentPageNumber < totalPageCount
+            ? currentPageNumber
+            : item.innerText;
+
+        item.nextSibling.innerHTML = "...";
+      } else if (+item.innerText > 3 && +item.innerText < totalPageCount) {
+        item.remove();
+      }
+
+      if (+item.innerText === currentPageNumber) {
         item.classList.toggle("active-pg");
+      }
+
+      item.innerText === "..." ? (item.style.pointerEvents = "none") : item;
+
+      if (pages.lastChild.innerText === "...") {
+        pages.lastChild.innerText = totalPageCount;
+      }
 
       item.addEventListener("click", (e) => {
-        console.log(e.target.innerText);
         currentPageNumber = +e.target.innerText;
         updatePaging();
       });
@@ -168,8 +172,6 @@ function loadPaging(totalItems, callback) {
     }
 
     preButton.disabled = currentPageNumber === 1;
-
-   
   };
 
   updatePaging();
