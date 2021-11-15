@@ -125,12 +125,11 @@ function loadPaging(totalItems, callback) {
     pages.innerHTML = "";
     const totalPageCount = Math.ceil(totalItems / +select.value);
 
-    const li = document.createElement("li");
-
+    let html = "";
     for (let i = 1; i <= totalPageCount; i++) {
-      li.innerText = `<li>${i}</li>`;
-      pages.innerHTML += li.innerText;
+      html += `<li>${i}</li>`;
     }
+    pages.innerHTML = html;
 
     const listOfLi = pages.querySelectorAll("li");
     listOfLi.forEach((item) => {
