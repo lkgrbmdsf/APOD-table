@@ -17,8 +17,11 @@ const currPage = document.querySelector(".curr-pg");
 const totalPages = document.querySelector(".total-pg");
 
 const FIRST_APOD_DATE = "1995-06-16";
-startDate.value = "2021-09-01";
+const DATE_NOW = new Date().toISOString().split("T")[0];
+startDate.value = "2021-11-01";
 endDate.value = "2021-11-09";
+startDate.max = endDate.value;
+endDate.max = DATE_NOW;
 
 let currentPageNumber = 1;
 preButton.disabled = currentPageNumber === 1;
@@ -28,24 +31,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 dates.forEach((date) => {
-  const dateNow = new Date().toISOString().split("T")[0];
   date.min = FIRST_APOD_DATE;
-  date.max = dateNow;
 
   date.addEventListener("change", () => {
+    if (endDate.value < startDate.value) {
+      startDate.value = endDate.value;
+    }
+    startDate.max = endDate.value;
+
     getResults(startDate.value, endDate.value);
   });
-});
-
-endDate.addEventListener("change", () => {
-  if (endDate.value < startDate.value) {
-    startDate.value = endDate.value;
-  }
-  startDate.max = endDate.value;
-});
-
-startDate.addEventListener("change", () => {
-  if (endDate.value < startDate.value) endDate.value = startDate.value;
 });
 
 modalWrapper.addEventListener("click", () => {
@@ -61,8 +56,8 @@ async function getResults(startDate, endDate) {
   table.innerHTML = spinner;
   try {
     pagination.classList.add("hidden");
-    const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
-    // const url = "./temp.json";
+    // const url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`;
+    const url = "./temp.json";
     const result = await fetch(url);
     const listOfImgs = await result.json();
     return loadPaging(listOfImgs.length, (pagingOptions) => {
@@ -105,12 +100,8 @@ async function loadList(list) {
   }
 
   let html = "";
-  await list.forEach((item, index) => {
-    do {
-      html += createItem(item);
-      index++;
-      break;
-    } while (index <= list.length - 1);
+  await list.forEach((item) => {
+    html += createItem(item);
   });
 
   table.innerHTML = html;
@@ -168,8 +159,6 @@ function loadPaging(totalItems, callback) {
     }
 
     preButton.disabled = currentPageNumber === 1;
-
-   
   };
 
   updatePaging();
